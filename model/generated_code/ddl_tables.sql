@@ -16,7 +16,7 @@ CREATE TABLE `users` (
     `phone_no` VARCHAR(15) NOT NULL,
     `name` VARCHAR(100) NOT NULL,
     `password` VARCHAR NOT NULL,
-    `isAdmin` BOOLEAN NOT NULL,
+    `is_admin` BOOLEAN NOT NULL,
     PRIMARY KEY (`userId`)
 );
 
@@ -55,12 +55,12 @@ CREATE TABLE `item_qtys` (
 
 CREATE TABLE `orders` (
     `id` INTEGER NOT NULL auto_increment,
-    `customer` VARCHAR(100) NOT NULL,
-    `breakfast_sets` INTEGER NOT NULL,
+    `customer` VARCHAR(100) ,
     `total_price` INTEGER NOT NULL,
-    `payment_info` INTEGER NOT NULL,
-    `order_status` INTEGER NOT NULL,
-    `delivery_time` DATETIME NOT NULL,
+    `payment_info` VARCHAR(100) NOT NULL,
+    `order_status` VARCHAR(20) NOT NULL,
+    `delivery_address` VARCHAR(1000) NOT NULL,
+    `delivery_time` TIMESTAMP NOT NULL,
     PRIMARY KEY (`id`)
 );
 

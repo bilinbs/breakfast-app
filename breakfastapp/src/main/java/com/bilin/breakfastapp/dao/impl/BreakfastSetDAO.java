@@ -9,10 +9,9 @@ import java.util.*;
 
 import com.bilin.breakfastapp.dao.BaseDAO;
 import com.bilin.breakfastapp.exceptions.DAOException;
-import com.bilin.breakfastapp.exceptions.UtilException;
 import com.bilin.breakfastapp.util.DBUtils;
 import com.bilin.breakfastapp.util.Tables.BREAKFAST_SETS;
-import com.bilin.breakfastapp.util.Tables.ITEMS;
+import com.bilin.breakfastapp.util.Tables.BREAKFAST_SETS_ORDERS;
 import com.bilin.breakfastapp.util.Tables.ITEM_QUANTITIES;
 import com.bilin.breakfastapp.vo.BreakfastSet;
 import com.bilin.breakfastapp.vo.Item;
@@ -21,7 +20,6 @@ import com.bilin.breakfastapp.vo.Item;
  * 
  */
 public class BreakfastSetDAO implements BaseDAO<BreakfastSet> {
-    
     private static BreakfastSetDAO instance;
     
     private BreakfastSetDAO (){
@@ -54,28 +52,6 @@ public class BreakfastSetDAO implements BaseDAO<BreakfastSet> {
         return result;
     }
 
-
-    
-    public Map<Item, Integer> getItemsForBFSet(long bfSetId) throws DAOException {
-        Map<Item, Integer> itemMap = new HashMap<Item,Integer>();
-        String sql = "select * from " + ITEM_QUANTITIES._name + ", " + ITEMS._name +
-                " where " + ITEM_QUANTITIES.ITEM_ID + " = " + ITEMS.ID + " and " + ITEM_QUANTITIES.BF_SET_ID + " = ?";
-        try(Connection conn = DBUtils.getConnection();
-                PreparedStatement ps = conn.prepareStatement(sql);){
-            ps.setLong(1, bfSetId);
-            ResultSet rs = ps.executeQuery();
-            while(rs.next()){
-                Item item = DBUtils.populateItem(new Item(), rs);
-                int qty = rs.getInt(ITEM_QUANTITIES.QUANTITY);
-                itemMap.put(item, qty);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new DAOException("Exception while executing BreakfastSet::getItemsForBFSet", e);
-        }
-        return itemMap;
-    }
-
     
     @Override
     public List<BreakfastSet> getAll() throws DAOException {
@@ -104,24 +80,21 @@ public class BreakfastSetDAO implements BaseDAO<BreakfastSet> {
         return results;
     }
     @Override
-    public void insert(BreakfastSet t) throws DAOException {
-        insert(t, false);
+    public long insert(BreakfastSet t) throws DAOException {
+        return insert(t, false);
     }
 
-    public void insert(BreakfastSet t, boolean isTemplate) throws DAOException {
+    public long insert(BreakfastSet t, boolean isTemplate) throws DAOException {
         long bfId;
         String sql =  "insert into " + BREAKFAST_SETS._name + "( " +
             BREAKFAST_SETS.NAME + ", " + BREAKFAST_SETS.DESCRIPTION + ", " +
             BREAKFAST_SETS.SERVING_STYLE + ", " + BREAKFAST_SETS.ISTEMPLATE + ", " +
             BREAKFAST_SETS.PRICE +
             ") values ( ?, ?, ?, ?, ?)";
-        Map<Item, Integer> itemMap =t.getItems();
-        String sql2 = "insert into " + ITEM_QUANTITIES._name + "( " +
-                ITEM_QUANTITIES.BF_SET_ID + ", " + ITEM_QUANTITIES.ITEM_ID + ", " +
-                ITEM_QUANTITIES.QUANTITY + ") values (?,?,?)";
+        
         try(Connection conn = DBUtils.getConnection();
                 PreparedStatement ps = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
-                PreparedStatement ps2 = conn.prepareStatement(sql2);){
+                ){
             ps.setString(1, t.getName());
             ps.setString(2, t.getDescription());
             if(null == t.getServingStyle()){
@@ -135,13 +108,8 @@ public class BreakfastSetDAO implements BaseDAO<BreakfastSet> {
             ResultSet genKey = ps.getGeneratedKeys();
             if(genKey.next()){
                 bfId = genKey.getLong(1);
-                for(Map.Entry<Item, Integer> entry : itemMap.entrySet()){
-                    ps2.setLong(1, bfId);
-                    ps2.setLong(2, entry.getKey().getId());
-                    ps2.setInt(3, entry.getValue());
-                    ps2.addBatch();
-                }
-                int[] op = ps2.executeBatch();
+                insertItemsForBfSet(bfId, t.getItems());
+                return bfId;
             } else {
                 throw new DAOException("No generated id while inserting breakfastset " + t);
             }
@@ -153,16 +121,125 @@ public class BreakfastSetDAO implements BaseDAO<BreakfastSet> {
     }
 
     @Override
+    public BreakfastSet update(BreakfastSet t) throws DAOException {
+        String sql = "update " + BREAKFAST_SETS._name + " set " +
+                BREAKFAST_SETS.NAME + " = ? , " +
+                BREAKFAST_SETS.DESCRIPTION + " = ? , " +
+                BREAKFAST_SETS.PRICE + " = ? , " +
+                BREAKFAST_SETS.SERVING_STYLE +  " = ?";
+        try(Connection conn = DBUtils.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql);){
+            ps.setString(1, t.getName());
+            ps.setString(2, t.getDescription());
+            ps.setDouble(3, t.getPrice());
+            if(null == t.getServingStyle()){
+                ps.setNull(4, java.sql.Types.INTEGER);
+            } else {
+                ps.setLong(4, t.getServingStyle().getId());
+            }
+            ps.executeUpdate();
+            deleteItemsForBfSet(t.getId());
+            insertItemsForBfSet(t.getId(), t.getItems());
+        } catch(Exception e){
+            e.printStackTrace();
+            throw new DAOException("Exception while updating breakfast set " + t.getId(), e);
+        }
+        return getById(t.id);
+        
+     }
+    /**
+     * 
+     * @param id
+     * @throws DAOException
+     */
+    private void deleteItemsForBfSet(long id) throws DAOException {
+        String sql = "delete from " + ITEM_QUANTITIES._name + " where " + 
+                ITEM_QUANTITIES.BF_SET_ID + " = ?";
+        try(Connection conn = DBUtils.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)){
+            ps.setLong(1, id);
+            ps.execute();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new DAOException("Exception while deleting items for breakfast set " + id, e);
+        }
+    }
+
+    /**
+     * @param bfId
+     * @param itemMap
+     * @throws SQLException
+     * @throws DAOException 
+     */
+    public void insertItemsForBfSet(long bfId, Map<Item, Integer> itemMap) throws SQLException, DAOException {
+        String sql = "insert into " + ITEM_QUANTITIES._name + "( " +
+                ITEM_QUANTITIES.BF_SET_ID + ", " + ITEM_QUANTITIES.ITEM_ID + ", " +
+                ITEM_QUANTITIES.QUANTITY + ") values (?,?,?)";
+        try(Connection conn = DBUtils.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql);){
+        for(Map.Entry<Item, Integer> entry : itemMap.entrySet()){
+            ps.setLong(1, bfId);
+            ps.setLong(2, entry.getKey().getId());
+            ps.setInt(3, entry.getValue());
+            ps.addBatch();
+        }
+        int[] op = ps.executeBatch();
+        System.out.println("Inserted items: " + op[0]);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new DAOException("Error while inserting items for set " + bfId, e);
+        }
+    }
+
+    @Override
     public void delete(BreakfastSet t) throws DAOException {
         throw new DAOException("unimplemented method");
         
     }
 
-    @Override
-    public BreakfastSet update(BreakfastSet t) {
-        // TODO Auto-generated method stub
-        return null;
-        
+
+    /**
+     * 
+     * @param orderId
+     * @return
+     * @throws DAOException
+     */
+    public List<BreakfastSet> getBFSetsForOrder(long orderId) throws DAOException{
+        String sql = "select * from " + BREAKFAST_SETS._name + ", " +
+                    BREAKFAST_SETS_ORDERS._name + " where " +
+                    BREAKFAST_SETS_ORDERS.BREAKFAST_SET_ID + " = " + BREAKFAST_SETS.ID +
+                    " and " + BREAKFAST_SETS_ORDERS.ORDER_ID + " = ?";
+        List<BreakfastSet> results = new ArrayList<BreakfastSet>();
+        try(Connection conn = DBUtils.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql);){
+            ps.setLong(1, orderId);
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()){
+                results.add(DBUtils.populateBfSet(new BreakfastSet(), rs));
+            }
+            return results;
+        } catch (Exception e){
+            e.printStackTrace();
+            throw new DAOException("Error while geting BF set for order" + orderId, e);
+        }
+    }
+    
+    public void addBFSetsForOrder(long orderId, List<Long> bfIds) throws DAOException {
+        String sql = "insert into " + BREAKFAST_SETS_ORDERS._name + "(" +
+                    BREAKFAST_SETS_ORDERS.BREAKFAST_SET_ID + ", " +
+                    BREAKFAST_SETS_ORDERS.ORDER_ID + ") values (?,?)";
+        try(Connection conn = DBUtils.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql);){
+            for(Long bfId : bfIds){
+                ps.setLong(1, bfId);
+                ps.setLong(2, orderId);
+                ps.addBatch();
+            }
+            ps.executeBatch();
+        } catch (Exception e){
+            e.printStackTrace();
+            throw new DAOException("Exception while inserting bf sets for order " + orderId, e);
+        }
     }
     
 }

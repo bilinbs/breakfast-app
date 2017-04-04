@@ -15,37 +15,37 @@ public class User {
     /**
      * 
      */
-    public String userId;
+    private String userId;
 
     /**
      * 
      */
-    public String email;
+    private String email;
 
     /**
      * 
      */
-    public String address;
+    private String address;
 
     /**
      * 
      */
-    public String phoneNo;
+    private String phoneNo;
 
     /**
      * 
      */
-    public String name;
+    private String name;
 
     /**
      * 
      */
-    public String password;
+    private String password;
 
     /**
      * 
      */
-    public boolean isAdmin;
+    private boolean isAdmin;
 
     public String getUserId() {
         return userId;

@@ -1,6 +1,5 @@
 package com.bilin.breakfastapp.vo;
 
-import java.util.*;
 
 /**
  * 
