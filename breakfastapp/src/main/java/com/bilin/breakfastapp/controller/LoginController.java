@@ -10,16 +10,16 @@ public interface LoginController {
     /**
      * 
      */
-    public void login();
+    public String login();
 
     /**
      * 
      */
-    public void logout();
+    public String logout();
 
     /**
      * 
      */
-    public void register();
+    public String register();
 
 }
