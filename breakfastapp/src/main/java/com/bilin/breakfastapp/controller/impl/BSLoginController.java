@@ -1,6 +1,9 @@
 package com.bilin.breakfastapp.controller.impl;
 
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -10,7 +13,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
 import com.bilin.breakfastapp.controller.LoginController;
+import com.bilin.breakfastapp.exceptions.ServiceException;
 import com.bilin.breakfastapp.service.LoginService;
+import com.bilin.breakfastapp.vo.User;
 
 /**
  * 
@@ -33,18 +38,27 @@ public class BSLoginController implements LoginController {
      */
     @RequestMapping(value="/login", method=RequestMethod.POST)
     public String login(@RequestParam("username") String userId, @RequestParam("password") String password, ModelMap model) {
+        String view = "login";
         System.out.println(userId + ":" + password);
-        model.addAttribute("errorMsg", "Invalid Credentials!!!");
-        return "login";
+        User user = null;
+        try {
+            user = loginService.authenticateUser(userId, password);
+        } catch (ServiceException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        if(user == null) {
+            model.addAttribute("errorMsg", "Invalid Credentials!!!");
+            view = "login";
+        } else if(user.isAdmin()){
+            model.addAttribute("user", user);
+            view = "adminHome";
+        } else {
+            model.addAttribute("user", user);
+            view = "index";
+        }
+        return view;
                
-    }
-
-    /**
-     * 
-     */
-    public String logout() {
-        // TODO implement here
-        return null;
     }
 
     /**
@@ -62,6 +76,12 @@ public class BSLoginController implements LoginController {
 
     @Override
     public String login() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String logout() {
         // TODO Auto-generated method stub
         return null;
     }

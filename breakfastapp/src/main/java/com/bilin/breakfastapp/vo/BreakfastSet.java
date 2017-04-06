@@ -16,27 +16,27 @@ public class BreakfastSet {
     /**
      * 
      */
-    public long id;
+    private long id;
 
     /**
      * 
      */
-    public String name;
+    private String name;
 
     /**
      * 
      */
-    public String description;
+    private String description;
 
     /**
      * 
      */
-    public Map<Item,Integer> items;
+    private Map<Item,Integer> items;
 
     /**
      * 
      */
-    public ServingStyle servingStyle;
+    private ServingStyle servingStyle;
 
     /**
      * 

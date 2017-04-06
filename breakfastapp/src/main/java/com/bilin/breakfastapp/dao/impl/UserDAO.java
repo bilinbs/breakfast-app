@@ -41,7 +41,7 @@ public class UserDAO implements BaseDAO<User> {
         try (Connection conn = DBUtils.getConnection();
                 PreparedStatement st = conn.prepareStatement(sql);) {
             st.setString(1, id);
-            ResultSet rs = st.executeQuery(sql);
+            ResultSet rs = st.executeQuery();
             if (rs.next()) {
                 DBUtils.populateUser(result, rs);
             }

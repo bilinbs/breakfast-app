@@ -63,8 +63,8 @@ public class BreakfastSetDAO implements BaseDAO<BreakfastSet> {
     }
     
     public List<BreakfastSet> getAll(boolean isTemplates) throws DAOException{
-        String sql = "select * from " + BREAKFAST_SETS._name +
-                (isTemplates? BREAKFAST_SETS.ISTEMPLATE + " = true" : "");
+        String sql = "select * from " + BREAKFAST_SETS._name + 
+                (isTemplates? " where  " + BREAKFAST_SETS.ISTEMPLATE + " = true" : "");
         List<BreakfastSet> results = new ArrayList<BreakfastSet>();
         try(Connection conn = DBUtils.getConnection();
                 PreparedStatement ps = conn.prepareStatement(sql);){
@@ -144,7 +144,7 @@ public class BreakfastSetDAO implements BaseDAO<BreakfastSet> {
             e.printStackTrace();
             throw new DAOException("Exception while updating breakfast set " + t.getId(), e);
         }
-        return getById(t.id);
+        return getById(t.getId());
         
      }
     /**

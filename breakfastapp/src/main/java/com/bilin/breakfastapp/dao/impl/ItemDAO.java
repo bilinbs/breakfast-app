@@ -41,7 +41,7 @@ public class ItemDAO implements BaseDAO<Item> {
         try (Connection conn = DBUtils.getConnection();
                 PreparedStatement st = conn.prepareStatement(sql);) {
             st.setLong(1, id);
-            ResultSet rs = st.executeQuery(sql);
+            ResultSet rs = st.executeQuery();
             if (rs.next()) {
                 DBUtils.populateItem(result, rs);
             }
@@ -59,7 +59,7 @@ public class ItemDAO implements BaseDAO<Item> {
         List<Item> results = new ArrayList<Item>();
         try (Connection conn = DBUtils.getConnection();
                 PreparedStatement st = conn.prepareStatement(sql);) {
-            ResultSet rs = st.executeQuery(sql);
+            ResultSet rs = st.executeQuery();
             while (rs.next()) {
                 results.add(DBUtils.populateItem(new Item(), rs));
             }
@@ -81,7 +81,7 @@ public class ItemDAO implements BaseDAO<Item> {
             ps.setString(2, item.getServingUnit());
             ps.setString(3, item.getDescription());
             ps.setDouble(4, item.getUnitPrice());
-            ps.execute(sql);
+            ps.execute();
             ResultSet genKey =  ps.getGeneratedKeys();
             if(genKey.next()){
                 return genKey.getLong(1);

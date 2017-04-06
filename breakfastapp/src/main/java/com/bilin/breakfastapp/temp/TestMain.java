@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.bilin.breakfastapp.dao.impl.BreakfastSetDAO;
+import com.bilin.breakfastapp.dao.impl.ItemDAO;
 import com.bilin.breakfastapp.dao.impl.OrderDAO;
 import com.bilin.breakfastapp.exceptions.DAOException;
 import com.bilin.breakfastapp.vo.BreakfastSet;
@@ -59,11 +60,17 @@ public class TestMain {
     breakfastSets.add(bf2);
     order.setBreakfastSets(breakfastSets);
     OrderDAO.getInstance().insert(order);*/
-        Order order = OrderDAO.getInstance().getById(4);
+        /*Order order = OrderDAO.getInstance().getById(4);
         order.setTotalPrice(230);
         order.setStatus(OrderStatus.CONFIRMED);
         OrderDAO.getInstance().update(order);
-        System.out.println(order);
+        System.out.println(order);*/
+        BreakfastSet bfs = BreakfastSetDAO.getInstance().getById(4);
+        List<Item> items = ItemDAO.getInstance().getAll();
+        for(Item item : items){
+            System.out.println(item.getName() + "::::::" + bfs.getItems().get(item));
+        }
+        System.out.println(bfs);
     }
 
 }

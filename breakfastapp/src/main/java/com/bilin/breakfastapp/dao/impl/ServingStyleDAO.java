@@ -128,6 +128,7 @@ public class ServingStyleDAO implements BaseDAO<ServingStyle> {
                 " and " + BREAKFASTSET_SERVINGSTYLES.BF_SET_ID + " = ?";
         try(Connection conn =DBUtils.getConnection();
                 PreparedStatement ps = conn.prepareStatement(sql);){
+            ps.setLong(1, bfId);
             ResultSet rs = ps.executeQuery();
             while(rs.next()){
                 results.add(DBUtils.populateServingStyle(new ServingStyle(), rs));
