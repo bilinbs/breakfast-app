@@ -29,12 +29,13 @@
 </nav>
 <br/><br/><br/><br/><br/><br/><br/><br/>
     <div class="container">
+    <div class="jumbotron">Customize Items in your chosen set</div>
       <c:forEach items="${items }" var="item">
             <div class="row">
           <div class="col-xs-3 col-xs-offset-3">
           <p>${item.name }</p>
           <p>${item.description }</p>
-          <p>Price : ${item.unitPrice }</p>
+          <p>Price per ${item.servingUnit}: ${item.unitPrice }</p>
            <div class="input-group number-spinner">
             <span class="input-group-btn data-dwn">
              <button class="btn btn-default btn-info" data-dir="dwn"><span class="glyphicon glyphicon-minus"></span></button>

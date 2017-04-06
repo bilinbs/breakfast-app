@@ -146,4 +146,17 @@ public class OrderServiceImpl implements OrderService {
         return order;
     }
 
+    @Override
+    public List<ServingStyle> getAllServingStyles() throws ServiceException {
+        List<ServingStyle> result;
+        try{
+            result = ssDao.getAll();
+        }catch (DAOException e) {
+            e.printStackTrace();
+            throw new ServiceException("Execption while getting all serving styles ", e);
+            
+        }
+        return result;
+    }
+
 }

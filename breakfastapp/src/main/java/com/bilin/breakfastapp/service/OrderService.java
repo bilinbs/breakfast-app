@@ -35,6 +35,8 @@ public interface OrderService {
     public BreakfastSet getBfSetById(long bfSetId) throws ServiceException;
 
     public List<ServingStyle> getServingStylesForBFSet(long bfSetId) throws ServiceException;
+    
+    public List<ServingStyle> getAllServingStyles() throws ServiceException;
 
     public ServingStyle getServingStyleById(long sstyleId) throws ServiceException;
 

@@ -28,8 +28,8 @@
 
 <div class="container">
 	<div class="row">
-        <h2>You have selected the breakfast set ${bfSet.name }</h2>
-		<h2>Now select a serving style for the breakfast.</h2>
+        <h2></h2>
+		<h2>You have selected the breakfast set ${bfSet.name }. Now select a serving style for the breakfast.</h2>
     </div>
     <div class="row">
         <div class="form-group">
@@ -44,8 +44,8 @@
                                <label class="btn btn-default">
                                    <div class="bizcontent">
                                        <span class="glyphicon glyphicon-ok glyphicon-lg"></span>
-                                       <h5>${sstyle.name }</h5>
-                                       <p class="text-center">${sstyle.description }</p>
+                                       <strong>${sstyle.name }</strong>
+                                       <p class="text-center" style="white-space:normal">${sstyle.description }</p>
                                        <p>Price : Rs ${sstyle.price }</p>
                                    </div>
                                </label>

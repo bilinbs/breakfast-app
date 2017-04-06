@@ -12,6 +12,9 @@ public class Item {
     public Item() {
     }
 
+    public Item(long id){
+        this.id = id;
+    }
     /**
      * 
      */

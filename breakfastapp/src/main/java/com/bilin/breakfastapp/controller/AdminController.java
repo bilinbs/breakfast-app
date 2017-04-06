@@ -1,5 +1,6 @@
 package com.bilin.breakfastapp.controller;
 
+import org.springframework.ui.ModelMap;
 
 /**
  * 
@@ -9,12 +10,12 @@ public interface AdminController {
     /**
      * 
      */
-    public void addItem();
+    public String addItem(ModelMap model);
 
     /**
      * 
      */
-    public void modifyIrtem();
+    public void modifyItem();
 
     /**
      * 
@@ -24,7 +25,7 @@ public interface AdminController {
     /**
      * 
      */
-    public void addBFSet();
+    public String addBFSet(ModelMap model);
 
     /**
      * 
@@ -39,7 +40,7 @@ public interface AdminController {
     /**
      * 
      */
-    public void addServingStyle();
+    public String addServingStyle(ModelMap model);
 
     /**
      * 

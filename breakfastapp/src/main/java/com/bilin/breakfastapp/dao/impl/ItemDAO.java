@@ -140,4 +140,20 @@ public class ItemDAO implements BaseDAO<Item> {
         }
         return itemMap;
     }
+    
+    public List<String> getAllServingUnits() throws DAOException{
+        String sql = "select distinct " + ITEMS.SERVINGUNIT + " from " + ITEMS._name;
+        List<String> results = new ArrayList<String>();
+        try(Connection conn = DBUtils.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql);){
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()){
+                results.add(rs.getString(1));
+            }
+            return results;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new DAOException("Exception while geting serving units", e);
+        }
+    }
 }

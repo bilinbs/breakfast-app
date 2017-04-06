@@ -55,7 +55,7 @@ public class ServingStyleDAO implements BaseDAO<ServingStyle> {
         List<ServingStyle> results = new ArrayList<ServingStyle>();
         try (Connection conn = DBUtils.getConnection();
                 PreparedStatement st = conn.prepareStatement(sql);) {
-            ResultSet rs = st.executeQuery(sql);
+            ResultSet rs = st.executeQuery();
             while (rs.next()) {
                 results.add(DBUtils.populateServingStyle(new ServingStyle(), rs));
             }
@@ -75,7 +75,7 @@ public class ServingStyleDAO implements BaseDAO<ServingStyle> {
             ps.setString(1, servingStyle.getName());
             ps.setString(2, servingStyle.getDescription());
             ps.setDouble(3, servingStyle.getPrice());
-            ps.execute(sql);
+            ps.execute();
             ResultSet genKey = ps.getGeneratedKeys();
             if(genKey.next()){
                 return genKey.getLong(1);
@@ -106,7 +106,7 @@ public class ServingStyleDAO implements BaseDAO<ServingStyle> {
             ps.setString(1, t.getName());
             ps.setString(2, t.getDescription());
             ps.setDouble(3, t.getPrice());
-            ps.execute(sql);
+            ps.execute();
 
         } catch (Exception e) {
             e.printStackTrace();

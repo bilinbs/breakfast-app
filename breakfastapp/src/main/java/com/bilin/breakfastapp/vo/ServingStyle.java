@@ -12,6 +12,9 @@ public class ServingStyle {
     public ServingStyle() {
     }
 
+    public ServingStyle(long id){
+        this.id = id;
+    }
     /**
      * 
      */

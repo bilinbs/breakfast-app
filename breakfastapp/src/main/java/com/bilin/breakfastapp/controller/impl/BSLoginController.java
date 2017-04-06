@@ -49,7 +49,7 @@ public class BSLoginController implements LoginController {
             view = "login";
         } else if(user.isAdmin()){
             model.addAttribute("user", user);
-            view = "adminHome";
+            view = "admin/adminHome";
         } else {
             model.addAttribute("user", user);
             view = "index";

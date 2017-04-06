@@ -44,7 +44,7 @@
                                    <div class="bizcontent">
                                        <span class="glyphicon glyphicon-ok glyphicon-lg"></span>
                                        <h5>${bfset.name }</h5>
-                                       <p class="text-center">${bfset.description }</p>
+                                       <p class="text-center" style="white-space:normal">${bfset.description }</p>
                                        <p>Price : Rs ${bfset.price }</p>
                                    </div>
                                </label>
