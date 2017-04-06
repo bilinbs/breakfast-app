@@ -1,19 +1,15 @@
 package com.bilin.breakfastapp.controller.impl;
 
-import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.swing.plaf.synth.SynthSeparatorUI;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.datetime.joda.DateTimeParser;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -27,7 +23,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
 import com.bilin.breakfastapp.controller.OrderController;
-import com.bilin.breakfastapp.dao.impl.ItemDAO;
 import com.bilin.breakfastapp.dto.ItmQtyDto;
 import com.bilin.breakfastapp.exceptions.ServiceException;
 import com.bilin.breakfastapp.service.OrderService;
@@ -164,6 +159,7 @@ public class BSOrderController implements OrderController {
         return "delivery-details";
     }
     
+    @SuppressWarnings("deprecation")
     @RequestMapping(value="/confirmOrder", method=RequestMethod.POST)
     public String confirmOrder(@RequestParam("noPerson") Integer noOfPersons, @RequestParam("paymentInfo") String paymentInfo,
             @RequestParam("daddress") String delivAddress, @RequestParam("ddate") String delivDate, 
